@@ -7,6 +7,7 @@ import { getSettings, saveSettings } from './lib/storage.js';
 import { parseQuery, detectPrefixMode } from './lib/omnibox.js';
 import { fetchSuggestions, buildMultiEngineSuggestions } from './lib/suggestions.js';
 import { findEngineByKeyword, getDefaultEngine } from './lib/engines.js';
+import { DEFAULT_SETTINGS } from './lib/defaults.js';
 
 // ─── Debounce helpers ───────────────────────────────────────────────────────
 
@@ -274,8 +275,7 @@ async function migrateStoredSettings() {
 
 chrome.runtime.onInstalled.addListener(async (details) => {
   if (details.reason === 'install') {
-    // Initialize storage with defaults
-    const { DEFAULT_SETTINGS } = await import('./lib/defaults.js');
+    // Initialize storage with defaults (use static import — dynamic import() not allowed in SW)
     await new Promise(resolve => chrome.storage.sync.set({ settings: DEFAULT_SETTINGS }, resolve));
 
     // Open options page on first install

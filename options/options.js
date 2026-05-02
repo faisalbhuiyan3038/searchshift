@@ -56,9 +56,9 @@ function renderEngines() {
   container.innerHTML = sorted.map((engine, idx) => `
     <div class="engine-row" data-id="${engine.id}" data-idx="${idx}">
       <span class="engine-drag" title="Drag to reorder">⋮⋮</span>
-      <div class="engine-icon-cell">
+      <div class="engine-icon-cell" data-emoji="${emojiFor(engine)}">
         ${engine.icon
-          ? `<img src="${engine.icon}" alt="${engine.name}" onerror="this.parentElement.textContent='${emojiFor(engine)}'">`
+          ? `<img src="${engine.icon}" alt="${engine.name}" data-fallback="${emojiFor(engine)}">`
           : emojiFor(engine)}
       </div>
       <div class="engine-details">
@@ -86,6 +86,13 @@ function renderEngines() {
       </div>
     </div>
   `).join('');
+
+  // Attach icon fallback handlers (cannot use inline onerror= due to MV3 CSP)
+  container.querySelectorAll('img[data-fallback]').forEach(img => {
+    img.addEventListener('error', () => {
+      img.parentElement.textContent = img.dataset.fallback;
+    });
+  });
 
   // Bind events
   container.querySelectorAll('.eng-toggle').forEach(cb => {

@@ -35,7 +35,6 @@ function renderEngineList(settings) {
   const container = document.getElementById('engine-list');
   const engines = settings.engines || [];
   const enabled = engines.filter(e => e.enabled);
-  const disabled = engines.filter(e => !e.enabled);
 
   if (engines.length === 0) {
     container.innerHTML = '<div class="empty-state">No engines configured.<br>Open Settings to add some.</div>';
@@ -43,20 +42,19 @@ function renderEngineList(settings) {
   }
 
   let html = '';
-
-  // Render all engines sorted by order
   const sorted = [...engines].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
   for (const engine of sorted) {
     const aliases = (engine.aliases || []).map(a => `@${a}`).join(', ');
     const keywords = `@${engine.keyword}${aliases ? ', ' + aliases : ''}`;
+    const emoji = getEmojiForEngine(engine);
 
     html += `
       <div class="engine-item" data-id="${engine.id}">
         <div class="engine-icon">
           ${engine.icon
-            ? `<img src="${engine.icon}" alt="${engine.name}" onerror="this.parentElement.textContent='${getEmojiForEngine(engine)}'">`
-            : getEmojiForEngine(engine)
+            ? `<img src="${engine.icon}" alt="${engine.name}" data-fallback="${emoji}">`
+            : emoji
           }
         </div>
         <div class="engine-info">
@@ -73,6 +71,13 @@ function renderEngineList(settings) {
 
   container.innerHTML = html;
 
+  // Attach icon fallback handlers without inline onerror= (blocked by MV3 CSP)
+  container.querySelectorAll('img[data-fallback]').forEach(img => {
+    img.addEventListener('error', () => {
+      img.parentElement.textContent = img.dataset.fallback;
+    });
+  });
+
   // Update footer count
   document.getElementById('footer-count').textContent = `${enabled.length}/${engines.length} active`;
 
@@ -82,7 +87,6 @@ function renderEngineList(settings) {
       const id = checkbox.dataset.id;
       const checked = checkbox.checked;
 
-      // Update settings
       const latest = await getSettings();
       if (!latest) return;
       latest.engines = latest.engines.map(e =>
@@ -92,6 +96,7 @@ function renderEngineList(settings) {
     });
   });
 }
+
 
 async function init() {
   const settings = await getSettings();
