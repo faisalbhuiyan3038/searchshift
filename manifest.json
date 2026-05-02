@@ -1,0 +1,42 @@
+{
+  "manifest_version": 3,
+  "name": "SearchShift",
+  "version": "1.0.0",
+  "description": "Flexible per-query search engine switching via @keyword tags in the omnibox.",
+  "author": "SearchShift",
+  "omnibox": {
+    "keyword": "s"
+  },
+  "permissions": [
+    "omnibox",
+    "storage",
+    "contextMenus",
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://*/*",
+    "http://*/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "popup/index.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    },
+    "default_title": "SearchShift"
+  },
+  "options_page": "options/index.html",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}
