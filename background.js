@@ -143,7 +143,7 @@ chrome.omnibox.onInputEntered.addListener(async (text, disposition) => {
   let query = text;
 
   // Check if suggestion content has our engine marker
-  const engineMarker = text.match(/^__engine:([^_]+)__(.*)$/);
+  const engineMarker = text.match(/^__engine:(.+?)__(.*)$/);
   if (engineMarker) {
     engineId = engineMarker[1];
     query = engineMarker[2];
